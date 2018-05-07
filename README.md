@@ -49,14 +49,14 @@ While this project types "break" and "continue" for you automaticly, and draw th
     6. ASMFILE is the address of your vmlinux.txt
 
 ### gdb
-    If you debug linux kernel with the official version of gdb, you will encounter a problem: "Remote 'g' packet reply is too long", so you need to download gdb source code, fix this problem and rebuild it.
+If you debug linux kernel with the official version of gdb, you will encounter a problem: "Remote 'g' packet reply is too long", so you need to download gdb source code, fix this problem and rebuild it.
 
-    change function process_g_packet in gdb/remote.c from 
+change function process_g_packet in gdb/remote.c from 
 
     if (buf_len > 2 * rsa->sizeof_g_packet)
         error (_(“Remote ‘g’ packet reply is too long: %s”), rs->buf);
 
-    to
+to
 
     if (buf_len > 2 * rsa->sizeof_g_packet) {
         rsa->sizeof_g_packet = buf_len ;
@@ -71,13 +71,14 @@ While this project types "break" and "continue" for you automaticly, and draw th
         }     
     }
 
-    Then, compile and install gdb:
+Then, compile and install gdb:
+
     ./configure
     make
     sudo make install 
 
 
-    Note: this change will work for gdb 8.1. For different version of gdb, the change may be slightly different ([for example](https://blog.csdn.net/u013592097/article/details/70549657)). If you can compile gdb after the change, it should work.
+Note: this change will work for gdb 8.1. For different version of gdb, the change may be slightly different ([for example](https://blog.csdn.net/u013592097/article/details/70549657)). If you can compile gdb after the change, it should work.
 
 
 # Run
