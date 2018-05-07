@@ -19,7 +19,7 @@ class gdbTracer:
         if(not self.asm.funcExit(funcName)):
             print('ERROR! Function %s not exist!' % funcName)
             return
-        self.write('target remote:1234' + '\n')
+        p.stdin.write(bytes('target remote:1234\n', encoding='utf8'))
 
     
     def configure(self, dotFileName, logFileName, depth):
