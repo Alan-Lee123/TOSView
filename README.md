@@ -15,7 +15,7 @@ While this project types "break" and "continue" for you automaticly, and draw th
 1. A linux distribution (ubuntu is recommemended)
 2. [linux kernel source code](https://www.kernel.org/)
 3. qemu
-4. gdb (please see the following section for more infomations on gdb)
+4. gdb
 5. python3
 
 # Install
