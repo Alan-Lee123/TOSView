@@ -83,3 +83,6 @@ Note: this change will work for gdb 8.1. For different version of gdb, the chang
 
 # Run
     python3 linux-kernel-code-reader/pyTracer.py functionYouWantToTrace
+
+
+Results are in linux-kernel-code-reader/result folder. You can open .svg file with Firefox browser and enjoy linux kernel source code.
