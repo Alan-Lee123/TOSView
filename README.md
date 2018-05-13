@@ -9,7 +9,7 @@ will find that you are sinking into the sea of codes. It is hard to figure out w
 
 Using gdb seems a good idea, but typing "break" and "continue" all the time is boring and inefficient.
 
-While this project types "break" and "continue" for you automaticly, and draw the running traces of linux kernel functions in a graph. You can open the graph with a browser like Firefox and click the nodes of the graph to see the corresponding source codes.
+While this project types "break" and "continue" for you automaticly, and draw the running traces of linux kernel functions in a graph, and prune this graph according to your configuration. You can open the graph with a browser like Firefox and click the nodes of the graph to see the corresponding source codes.
 
 # Dependencies
 1. A linux distribution (ubuntu is recommemended)
@@ -40,13 +40,21 @@ While this project types "break" and "continue" for you automaticly, and draw th
     1. objdump -d vmlinux > vmlinux.txt
 3. Create initrd
     1. mkinitramfs -o initrd.img
-4. Open linux-kernel-code-reader/config.py, change the configuration.
+4. Config linux-kernel-code-reader/config.py
     1. LINUXFOLDER is address of your linux kernel source code folder
     2. ARCH should be "x86", this project do not support other archetecture now.
     3. QEMU should be "qemu-system-x86_64" for the same reason
     4. MEMORYSIZE is the memory size you want your qemu to simulate, it should not be too small
     5. INITRDADDR is the address of your initrd.img
     6. ASMFILE is the address of your vmlinux.txt
+    7. PRUNED should be True or False. If PRUNED is True, the program will prune the graph according to pruneConfig.py.
+    8. PRUNELEVEL is a integer, only used when PRUNED is True. All the topics out of pruneConfig.py/LEVELTABLE[0:PRUNELEVEL + 1] will be pruned.
+    9. PRUNEOUTCOME is a integer, only used when PRUNE is True. All the topics out of pruneConfig.py/OUTCOMETABLE[PRUNEOUTCOME] will be pruned.
+5. Config pruneConfig.py if PRUNED is True
+    1. TOPICNUMBERS is the number of topics you are interested.
+    2. LEVELTABLE is a 2d array that consists of numbers in 0 - TOPICNUMBERS. Each array means a topic level. You should divide the topics in several groups. The lower groups should contains the more fundamental topics. Combined with PRUNELEVEL, you can prune the graph according to different detail levels.
+    3. OUTCOMETABLE is a 2d array that consists of numbers in 0 - TOPICNUMBERS. You can have many learning outcomes. Then fill the OUTCOMTABLE according to different learning outcomes. Combined with PRUNEOUTCOME, you can prune the graph according to different learning outcomes.
+    4. FILETABLE is a 2d array that consists of files in linux kernel source folder. Each array means the files that belong to a specific topic. 
 
 ### gdb
 If you debug linux kernel with the official version of gdb, you will encounter a problem: "Remote 'g' packet reply is too long", so you need to download gdb source code, fix this problem and rebuild it.
@@ -85,4 +93,4 @@ Note: this change will work for gdb 8.1. For different version of gdb, the chang
     python3 linux-kernel-code-reader/pyTracer.py functionYouWantToTrace
 
 
-Results are in linux-kernel-code-reader/result folder. You can open .svg file with Firefox browser and enjoy linux kernel source code.
+Results are in linux-kernel-code-reader/result folder. You can open .svg file with Firefox browser and enjoy linux kernel source code. The executing order os these functions is the same as depth first search order.

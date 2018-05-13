@@ -1,4 +1,4 @@
-# Topics:
+# Topics (of filesystem):
 #0 data
 #1 metadata
 #2 operations
