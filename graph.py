@@ -8,7 +8,6 @@ class graphPainter:
         self.sourceFolder = sourceFolder + '/'
         self.maxDepth = depth
         self.nodes = {}
-        self.cnt = 0
 
     def insert(self, key, n):
         if(key not in self.nodes.keys()):
@@ -29,8 +28,7 @@ class graphPainter:
             link = self.nodes[pre] + ' -> ' + self.nodes[cur]
             if(link not in self.existLinks):
                 self.existLinks.add(link)
-                self.cnt += 1
-                link += ' [label = "%d"];\n' % self.cnt
+                link += ';\n'
                 self.f.write(link)
                 
 

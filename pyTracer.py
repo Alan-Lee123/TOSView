@@ -3,16 +3,20 @@ import subprocess
 import time
 import os
 import signal
+import shutil
 
 from bt import parse_bt, cmp_bt
 from threading import Thread
 from graph import graphPainter
 from gdb import gdbTracer
 from config import QEMU, MEMORYSIZE, LINUXFOLDER, ARCH, INITRDADDR
+from prune import prune
+from config import PRUNED
 
 
 if __name__=='__main__':
-    funcName = sys.argv[1]
+    # funcName = sys.argv[1]
+    funcName = 'SyS_write'
     
     qemu_p = subprocess.Popen(' '.join([QEMU, '-m', MEMORYSIZE,
         '-kernel', LINUXFOLDER + '/arch/' + ARCH + '/boot/bzImage',
@@ -20,8 +24,10 @@ if __name__=='__main__':
     g = subprocess.Popen('gdb ' + LINUXFOLDER + '/vmlinux', shell=True,
         stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, preexec_fn=os.setsid)
 
-    if not os.path.exists('result'):
-        os.makedirs('result')
+    if  os.path.exists('result'):
+        shutil.rmtree('result')
+    os.makedirs('result')
+
 
     logCnt = 0
     gt = gdbTracer(g, funcName)
@@ -39,6 +45,12 @@ if __name__=='__main__':
         gt.configure(dotFileName, logFileName, maxDepth)
         gt.run()
         subprocess.Popen('dot -Tsvg %s -o %s' %(dotFileName, svgFileName), shell=True)
+        if(PRUNED):
+            prunedDotFileName = dotFileName.split('.')[0] + '_pruned.dot'
+            prunedSvgFileName = svgFileName.split('.')[0] + '_pruned.svg'
+            prune(dotFileName, prunedDotFileName)
+            subprocess.Popen('dot -Tsvg %s -o %s' %(prunedDotFileName, prunedSvgFileName), shell=True)
+
         print('Finish ploting %s' % svgFileName)
         print('Continue and plot another graph on %s?(n/y)' % funcName)
         r = input()

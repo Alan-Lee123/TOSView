@@ -16,7 +16,7 @@ class gdbTracer:
         cur_time = time.clock()
         self.asm = asmAnalyser(ASMFILE)
         print('finished loading, cost %ss' % str(time.clock() - cur_time))
-        if(not self.asm.funcExit(funcName)):
+        if(not self.asm.funcExist(funcName)):
             print('ERROR! Function %s not exist!' % funcName)
             return
         p.stdin.write(bytes('target remote:1234\n', encoding='utf8'))
@@ -42,10 +42,11 @@ class gdbTracer:
         ls = []
         while(True):
             l = self.p.stdout.readline().decode()
+            ls.append(l)
             if(self.ed in l):
                 break
-            ls.append(l)
         self.log.writelines(ls)
+        ls.pop()
         return ls
     
     def getRip(self):
@@ -109,7 +110,7 @@ class gdbTracer:
                 if(rip in self.endAddrs):
                     break
                 if(len(bt) - len(base_bt) <= self.maxDepth):
-                    if(self.asm.funcExit(func) and rip == self.asm.getFuncAddr(func)):
+                    if(self.asm.funcExist(func) and rip == self.asm.getFuncAddr(func)):
                         for point in (self.asm.getRets(func) + self.asm.getCalls(func)):
                             self.bk(point)
                     if(rip in self.asm.getCallSrcs()):

@@ -12,17 +12,20 @@ class asmAnalyser:
         self.BIT = 16
 
         tracerFile = addr.split('/')[-1] + '.tracer'
-        if(os.path.isfile(tracerFile)):
-            self.load(tracerFile)
-        else:
+        if(not self.load(tracerFile, addr)):
             self.analyze(addr)
-            self.save(tracerFile)
+            self.save(tracerFile, addr)
 
     
-    def load(self, tracerFile):
+    def load(self, tracerFileName, asmFileName):
         cur = -1
-        with open(tracerFile) as f:
-            for l in f:
+        if(not os.path.isfile(tracerFileName)):
+            return False
+        with open(tracerFileName) as f:
+            ls = f.readlines()
+            if(ls[0].strip() != str(os.path.getmtime(asmFileName))):
+                return False
+            for l in ls[1:]:
                 if(l[0] == '#'):
                     if('rets' in l):
                         cur = 0
@@ -42,9 +45,11 @@ class asmAnalyser:
                         self.callDsts[ws[0]] = ws[1]
                     elif(cur == 3):
                         self.funcAddrs[ws[0]] = ws[1]
+        return True
     
-    def save(self, tracerFile):
-        f = open(tracerFile, 'w')
+    def save(self, tracerFileName, asmFileName):
+        f = open(tracerFileName, 'w')
+        f.write(str(os.path.getmtime(asmFileName)) + '\n')
         f.write('#rets:\n')
         for fname in self.rets:
             f.write(fname)
@@ -124,7 +129,7 @@ class asmAnalyser:
     def getFuncAddr(self, func):
         return self.funcAddrs[func]
     
-    def funcExit(self, func):
+    def funcExist(self, func):
         return func in self.calls.keys()
 
 
