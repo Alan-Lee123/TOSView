@@ -54,7 +54,7 @@ While this project types "break" and "continue" for you automaticly, and draw th
     1. TOPICNUMBERS is the number of topics you are interested.
     2. LEVELTABLE is a 2d array that consists of numbers in 0 - TOPICNUMBERS. Each array means a topic level. You should divide the topics in several groups. The lower groups should contains the more fundamental topics. Combined with PRUNELEVEL, you can prune the graph according to different detail levels.
     3. OUTCOMETABLE is a 2d array that consists of numbers in 0 - TOPICNUMBERS. You can have many learning outcomes. Then fill the OUTCOMTABLE according to different learning outcomes. Combined with PRUNEOUTCOME, you can prune the graph according to different learning outcomes.
-    4. FILETABLE is a 2d array that consists of files in linux kernel source folder. Each array means the files that belong to a specific topic. 
+    4. FILETABLE is a 2d array that consists of files/folders(for folders, please keep a '/' at the end) in linux kernel source folder. Each array means the files that belong to a specific topic. 
 
 ### gdb
 If you debug linux kernel with the official version of gdb, you will encounter a problem: "Remote 'g' packet reply is too long", so you need to download gdb source code, fix this problem and rebuild it.
