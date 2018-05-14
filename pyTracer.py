@@ -15,8 +15,8 @@ from config import PRUNED
 
 
 if __name__=='__main__':
-    # funcName = sys.argv[1]
-    funcName = 'SyS_write'
+    funcName = sys.argv[1]
+    # funcName = 'SyS_write'
     
     qemu_p = subprocess.Popen(' '.join([QEMU, '-m', MEMORYSIZE,
         '-kernel', LINUXFOLDER + '/arch/' + ARCH + '/boot/bzImage',
