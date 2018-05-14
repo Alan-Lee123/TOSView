@@ -54,7 +54,12 @@ def prune(dotFileName, prunedFileName):
                     prunedFile.write(nl + '\n')
             elif(len(ws) == 7):
                 fname = ws[3].split('\\n')[1].split(':')[0]
-                if(fname in validFiles):
+                flag = fname in validFiles
+                for k in range(len(fname)):
+                    if(fname[k] == '/'):
+                        if(fname[:k + 1] in validFiles):
+                            flag = True
+                if(flag):
                     validNodes.add(ws[0])
                     nl = ' '.join(ws)
                     prunedFile.write(nl + '\n')
