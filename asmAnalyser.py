@@ -102,17 +102,18 @@ class asmAnalyser:
                     if('*' in l ):
                         b = True
                         self.callDsts[addr] = dst(l)
+                        target = '*' + addr
                     elif('<' in l and '>' in l):
                         cur = l[l.index('<') + 1: l.index('>')]
                         if('+' in cur):
                             cur = cur.split('+')[0]
                         if(cur != name):
                             b = True
-                            self.callDsts[addr] = '*0x' + l.split()[-2]
+                            target = '*0x' + l.split()[-2]
                     elif('retq' in l.split()):
                         self.rets[name] += ['*' + addr]
                     if(b == True and addr != funcAddr):
-                        self.calls[name] += ['*' + addr]
+                        self.calls[name] += [target]
 
     def getCalls(self, func):
         return self.calls[func]
