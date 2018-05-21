@@ -40,4 +40,10 @@ def cmp_bt(bt, base):
             return True
     return False
 
+def common_bt(cur, pre, n):
+    x = -n 
+    m = -min(len(cur), len(pre))
+    while(x >= m and cur[x][:2] == pre[x][:2]):
+        x -= 1
+    return len(cur) + x + 1
 

@@ -45,7 +45,6 @@ class gdbTracer:
             ls.append(l)
             if(self.ed in l):
                 break
-        self.log.writelines(ls)
         ls.pop()
         return ls
     
@@ -101,17 +100,20 @@ class gdbTracer:
         assert(func == self.func)
         for point in self.asm.getRets(func):
             self.endAddrs.append(point[1:])
+            self.bk(point)
         painter = graphPainter(self.dotFileName, bt, self.sourceFolder, self.maxDepth)
         
 
         while(True):
             if(cmp_bt(bt, base_bt)):
-                painter.paint(bt)
+                self.log.write('edge: %d\n' % painter.cnt)
+                self.log.writelines(ls)
                 if(rip in self.endAddrs):
                     break
+                painter.paint(bt, rip == self.asm.getFuncAddr(func))
                 if(len(bt) - len(base_bt) <= self.maxDepth):
-                    if(self.asm.funcExist(func) and rip == self.asm.getFuncAddr(func)):
-                        for point in (self.asm.getRets(func) + self.asm.getCalls(func)):
+                    if(rip == self.asm.getFuncAddr(func)):
+                        for point in self.asm.getCalls(func):
                             self.bk(point)
                     if(rip in self.asm.getCallSrcs()):
                         self.bk(self.asm.getCallDst(rip))

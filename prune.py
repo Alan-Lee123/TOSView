@@ -32,38 +32,82 @@ def prune(dotFileName, prunedFileName):
     validNodes = set()
     validNodes.add('n0')
 
-    def valid(x):
+    def valid(x, n):
         if(x in validNodes):
-            return x
+            return [x, n]
         else:
-            return valid(parent[x])
-    
+            r = ['', 0]
+            for p in parent[x]:
+                if(p[1] < n and p[1] > r[1]):
+                    r = p
+            return valid(r[0], r[1])
+
     prunedFile = open(prunedFileName, 'w')
+
     with open(dotFileName, 'r') as f:
         ls = f.readlines()
-        for l in ls:
-            ws = l.split()
-            if(len(ws) == 3):
-                ws = l.split()
-                p = ws[0]
-                s = ws[2].split(';')[0]
-                parent[s] = p
-                if(s in validNodes):
-                    ws[0] = valid(p)
-                    nl = ' '.join(ws)
-                    prunedFile.write(nl + '\n')
-            elif(len(ws) == 7):
-                fname = ws[3].split('\\n')[1].split(':')[0]
-                flag = fname in validFiles
-                for k in range(len(fname)):
-                    if(fname[k] == '/'):
-                        if(fname[:k + 1] in validFiles):
-                            flag = True
-                if(flag):
-                    validNodes.add(ws[0])
-                    nl = ' '.join(ws)
-                    prunedFile.write(nl + '\n')
+    
+    prunedFile.write(ls[0])
+
+    for l in ls:
+        ws = l.split()
+        if(len(ws) == 6):
+            p = ws[0]
+            s = ws[2]
+            ns = ws[5].split('"')[1].split(',')
+            pr = [p, s]
+            for t in ns:
+                if t != '...':
+                    if(s not in parent.keys()):
+                        parent[s] = [[p, int(t)]]
+                    else:
+                        parent[s].append([p, int(t)])
+
+        elif(len(ws) == 7):
+            fname = ws[3].split('\\n')[1].split(':')[0]
+            flag = fname in validFiles
+            if(len(fname) > 2 and fname[:2] == './'):
+                start = 2
             else:
-                prunedFile.write(l)
+                start = 0
+            for k in range(start, len(fname)):
+                if(fname[k] == '/'):
+                    if(fname[start:k + 1] in validFiles):
+                        flag = True
+            if(flag):
+                validNodes.add(ws[0])
+                nl = ' '.join(ws)
+                prunedFile.write(nl + '\n')
+    
+
+    for l in ls:
+        ws = l.split()
+        if(len(ws) == 6):
+            if(ws[2] in validNodes):
+                ns = ws[5].split('"')[1].split(',')
+                ps = {}
+                for n in ns:
+                    if(n == '...'):
+                        continue
+                    n = int(n)
+                    p = valid(ws[0], n)
+                    if(len(p) > 0):
+                        if(p[1] != n):
+                            p[1] = '%d-%d' % (p[1], n)
+                        else:
+                            p[1] = str(p[1])
+                        if(p[0] not in ps.keys()):
+                            ps[p[0]] = [p[1]]
+                        else:
+                            ps[p[0]].append(p[1])
+                    
+                for p in ps.keys():
+                    ws[0] = p
+                    ws[5] = '"%s"];' % ','.join(ps[p])
+                    nl = ' '.join(ws)
+                    prunedFile.write(nl + '\n')
+
+    prunedFile.write(ls[-1])
     prunedFile.close()
+
 

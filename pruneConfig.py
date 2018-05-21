@@ -38,7 +38,7 @@ OUTCOMETABLE = [[0, 1, 2, 3, 4, 7, 8, 10, 14, 15, 16],
                     [17]]
 
 FILETABLE = [['fs/binfmt_aout.c', 'fs/binfmt_elf_fdpic.c', 'fs/binfmt_elf.c', 
-'fs/binfmt_em86.c', 'fs/binfmt_flat.c', 'fs/binfmt_misc.c', 'fs/binfmt_script.c', 'fs/compat_binfmt_elf.c'],
+'fs/binfmt_em86.c', 'fs/binfmt_flat.c', 'fs/binfmt_misc.c', 'fs/binfmt_script.c', 'fs/compat_binfmt_elf.c', 'kernel/locking/'],
             ['fs/attr.c', 'fs/fhandle.c', 'fs/file_table.c', 'fs/file.c', 'fs/stat.c', 'fs/statfs.c', 'fs/xattr.c', 
 'fs/ext2/xattr_security.c', 'fs/ext2/xattr_trusted.c', 'fs/ext2/xattr_user.c', 'fs/ext2/xattr_user.c', 
 'fs/ext2/xattr.c', 'fs/ext2/xattr.h'],
