@@ -110,9 +110,10 @@ class gdbTracer:
                 self.log.writelines(ls)
                 if(rip in self.endAddrs):
                     break
-                painter.paint(bt, rip == self.asm.getFuncAddr(func))
+                new = self.asm.funcExist(func) and rip == self.asm.getFuncAddr(func)
+                painter.paint(bt, new)
                 if(len(bt) - len(base_bt) <= self.maxDepth):
-                    if(rip == self.asm.getFuncAddr(func)):
+                    if(new):
                         for point in self.asm.getCalls(func):
                             self.bk(point)
                     if(rip in self.asm.getCallSrcs()):
