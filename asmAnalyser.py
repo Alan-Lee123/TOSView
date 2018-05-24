@@ -1,6 +1,7 @@
 import string
 import time
 import os
+from config import ADDRESSBIT
 
 class asmAnalyser:
     def __init__(self, addr):
@@ -9,7 +10,12 @@ class asmAnalyser:
         self.rets = {}
         self.callDsts = {}
         self.funcAddrs = {}
-        self.BIT = 16
+        self.BIT = int(ADDRESSBIT) // 4
+        self.RETCOMMAND = 'ret'
+        self.LEAVECOMMAND = 'leave'
+        if(ADDRESSBIT == 64):
+            self.RETCOMMAND = 'retq'
+            self.LEAVECOMMAND = 'leaveq'
 
         tracerFile = addr.split('/')[-1] + '.tracer'
         if(not self.load(tracerFile, addr)):
@@ -72,8 +78,8 @@ class asmAnalyser:
 
     
     def analyze(self, fName):
-        def ishex(s):
-            return all(c in string.hexdigits for c in s)
+        def beginWithHex(s):
+            return all(c in string.hexdigits for c in s[:self.BIT])
         
         def dst(d):
             s = d.split()[-1]
@@ -85,7 +91,8 @@ class asmAnalyser:
             name = ''
             for l in f:
                 l = l.strip()
-                if(len(l) < self.BIT or not ishex(l[:16])):
+                ws = l.split()
+                if(len(l) < self.BIT or not beginWithHex(l)):
                     name = ''
                     continue 
                 elif(l[self.BIT] == ' '):
@@ -109,8 +116,8 @@ class asmAnalyser:
                             cur = cur.split('+')[0]
                         if(cur != name):
                             b = True
-                            target = '*0x' + l.split()[-2]
-                    elif('retq' in l.split()):
+                            target = '*0x' + ws[-2]
+                    elif(self.RETCOMMAND in ws or self.LEAVECOMMAND in ws):
                         self.rets[name] += ['*' + addr]
                     if(b == True and addr != funcAddr):
                         self.calls[name] += [target]
@@ -136,7 +143,7 @@ class asmAnalyser:
 
 if __name__=='__main__':
     start = time.clock()
-    asm = asmAnalyser('/home/alan/vmlinux.txt')
+    asm = asmAnalyser('/home/alan/xv6-public/kernel.asm')
     print(time.clock() - start)
     print('call func, ret func, callDst addr')
     while(True):

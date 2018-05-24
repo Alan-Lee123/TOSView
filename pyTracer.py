@@ -9,23 +9,20 @@ from bt import parse_bt, cmp_bt
 from threading import Thread
 from graph import graphPainter
 from gdb import gdbTracer
-from config import QEMU, MEMORYSIZE, LINUXFOLDER, ARCH, INITRDADDR
+from config import QEMUCOMMAND, SOURCEFOLDER, KERNELOBJ
 from prune import prune
 from config import PRUNED
 
 
 if __name__=='__main__':
     funcName = sys.argv[1]
-    qemu_p = subprocess.Popen(' '.join([QEMU, '-m', MEMORYSIZE,
-        '-kernel', LINUXFOLDER + '/arch/' + ARCH + '/boot/bzImage',
-        '-initrd', INITRDADDR, '-gdb', 'tcp::1234', '-S']), shell=True, preexec_fn=os.setsid)
-    g = subprocess.Popen('gdb ' + LINUXFOLDER + '/vmlinux', shell=True,
-        stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, preexec_fn=os.setsid)
+    qemu_p = subprocess.Popen(QEMUCOMMAND, shell=True, preexec_fn=os.setsid)
+    g = subprocess.Popen('gdb ' + KERNELOBJ, shell=True, stdin=subprocess.PIPE, 
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT, preexec_fn=os.setsid)
 
     if  os.path.exists('result'):
         shutil.rmtree('result')
     os.makedirs('result')
-
 
     logCnt = 0
     gt = gdbTracer(g, funcName)
@@ -41,7 +38,14 @@ if __name__=='__main__':
         else:
             maxDepth = int(r.strip())
         gt.configure(dotFileName, logFileName, maxDepth)
-        gt.run()
+        try:
+            gt.run()
+        except Exception as e:
+            print(e)
+            gt.painter.close()
+            gt.log.close()
+            
+            
         subprocess.Popen('dot -Tsvg %s -o %s' %(dotFileName, svgFileName), shell=True)
         if(PRUNED):
             prunedDotFileName = dotFileName.split('.')[0] + '_pruned.dot'

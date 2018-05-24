@@ -2,13 +2,13 @@ from bt import parse_bt, cmp_bt
 from graph import graphPainter
 from asmAnalyser import asmAnalyser
 import time
-from config import LINUXFOLDER, ASMFILE
+from config import SOURCEFOLDER, ASMFILE, GDBPORT, ADDRESSBIT
 
 class gdbTracer:
     def __init__(self, p, funcName):
         self.p = p
         self.func = funcName
-        self.sourceFolder = LINUXFOLDER
+        self.sourceFolder = SOURCEFOLDER
         self.max_brkTime = 30    # If a breakpoint is triggered more than this number, it will be removed
         self.ed = '394743516231415926'   # A random number as end of output of a session
 
@@ -19,7 +19,7 @@ class gdbTracer:
         if(not self.asm.funcExist(funcName)):
             print('ERROR! Function %s not exist!' % funcName)
             return
-        p.stdin.write(bytes('target remote:1234\n', encoding='utf8'))
+        p.stdin.write(bytes('target remote:%s\n' % GDBPORT, encoding='utf8'))
 
     
     def configure(self, dotFileName, logFileName, depth):
@@ -45,11 +45,16 @@ class gdbTracer:
             ls.append(l)
             if(self.ed in l):
                 break
+        assert(len(ls) > 0)
+        self.log.writelines(ls)
         ls.pop()
         return ls
     
     def getRip(self):
-        self.write('p/x $rip')
+        if(ADDRESSBIT == 64):
+            self.write('p/x $rip')
+        else:
+            self.write('p/x $eip')
         self.flush()
         ls = self.read()
         assert(len(ls) > 0 and '= ' in ls[-1])
@@ -101,17 +106,14 @@ class gdbTracer:
         for point in self.asm.getRets(func):
             self.endAddrs.append(point[1:])
             self.bk(point)
-        painter = graphPainter(self.dotFileName, bt, self.sourceFolder, self.maxDepth)
+        self.painter = graphPainter(self.dotFileName, bt, self.sourceFolder, self.maxDepth)
         
-
         while(True):
             if(cmp_bt(bt, base_bt)):
-                self.log.write('edge: %d\n' % painter.cnt)
-                self.log.writelines(ls)
-                if(rip in self.endAddrs):
+                if(rip in self.endAddrs and len(bt) == len(base_bt)):
                     break
                 new = self.asm.funcExist(func) and rip == self.asm.getFuncAddr(func)
-                painter.paint(bt, new)
+                self.painter.paint(bt, new)
                 if(len(bt) - len(base_bt) <= self.maxDepth):
                     if(new):
                         for point in self.asm.getCalls(func):
@@ -128,7 +130,7 @@ class gdbTracer:
             func = bt[0][0]
             self.checkBreak(ls)
         
-        painter.close()
+        self.painter.close()
         self.log.close()
 
             

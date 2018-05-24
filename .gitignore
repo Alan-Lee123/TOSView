@@ -1,4 +1,4 @@
 result/
-vmlinux.txt.tracer
 __pycache__/
-.vscode/launch.json
+.vscode/
+*.tracer

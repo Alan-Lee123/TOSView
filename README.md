@@ -1,7 +1,7 @@
 # TOSView
-Draw the running traces of linux kernel functions in a graph and link graph nodes to the source codes
+Draw the running traces of OS(linux, xv6, ...) kernel functions in a graph and link graph nodes to the source codes
 
-![alt text](https://github.com/Alan-Lee123/linux-kernel-code-reader/blob/master/trace.png)
+![alt text](https://github.com/Alan-Lee123/TOSView/blob/master/trace.png)
 
 # Why you need this
 If you try reading linux kernel source code, you
@@ -9,21 +9,29 @@ will find that you are sinking into the sea of codes. It is hard to figure out w
 
 Using gdb seems a good idea, but typing "break" and "continue" all the time is boring and inefficient.
 
-While this project types "break" and "continue" for you automaticly, and draw the running traces of linux kernel functions in a graph, and prune this graph according to your configuration. You can open the graph with a browser like Firefox and click the nodes of the graph to see the corresponding source codes.
+While this project types "break" and "continue" for you automaticly, and draw the running traces of OS kernel functions in a graph, and prune this graph according to your configuration. You can open the graph with a browser like Firefox and click the nodes of the graph to see the corresponding source codes.
+
+This README will show you how to use TOSView to learn linux and xv6. You can inspect other OS using TOSView as long as you can compile that OS and run it in qemu.
 
 # Dependencies
 1. A linux distribution (ubuntu is recommemended)
-2. [linux kernel source code](https://www.kernel.org/)
+2. Source code of the operating system you want to learn.
 3. qemu
 4. gdb
 5. python3
 
-# Install
+# Prepare
+1. Compile the OS
+2. Disassemble binary file of the OS kernel.
+3. Configure TOSView/config.py
+4. Config pruneConfig.py (optional)
+
+# Prepare Linux
 1. Compile linux kernel source code
     1. make mrproper
     2. make defconfig
     3. make menuconfig
-        1. open "64-bit kernel"
+        1. open or close "64-bit kernel"
         2. Close "Processor type and features/Randomize the address of the kernel image (KALSR)"
         3. in "Kernel hacking/Compile-time checks and compiler options"
             1. open "Compile the kernel with debug info"
@@ -36,25 +44,33 @@ While this project types "break" and "continue" for you automaticly, and draw th
     4. save and quit menuconfig
     5. make -j* (* means the cpu cores your computer have)
     6. make modules
-2. You can find "vmlinux" in your linux kernel source code folder after compiling. Run:   
+2. You can find "vmlinux" in your linux kernel source code folder after compiling. Use objdump to disassemble it. Run:   
     1. objdump -d vmlinux > vmlinux.txt
 3. Create initrd
     1. mkinitramfs -o initrd.img
-4. Config linux-kernel-code-reader/config.py
-    1. LINUXFOLDER is address of your linux kernel source code folder
-    2. ARCH should be "x86", this project do not support other archetecture now.
-    3. QEMU should be "qemu-system-x86_64" for the same reason
-    4. MEMORYSIZE is the memory size you want your qemu to simulate, it should not be too small
-    5. INITRDADDR is the address of your initrd.img
-    6. ASMFILE is the address of your vmlinux.txt
-    7. PRUNED should be True or False. If PRUNED is True, the program will prune the graph according to pruneConfig.py.
-    8. PRUNELEVEL is a integer, only used when PRUNED is True. All the topics out of pruneConfig.py/LEVELTABLE[0:PRUNELEVEL + 1] will be pruned.
-    9. PRUNEOUTCOME is a integer, only used when PRUNE is True. All the topics out of pruneConfig.py/OUTCOMETABLE[PRUNEOUTCOME] will be pruned.
-5. Config pruneConfig.py if PRUNED is True
+4. Config TOSView/config.py
+    1. ADDRESSBIT is 32 or 64, depending on whether your kernel is 32-bit or 64-bit.
+    2. SOURCEFOLDER is address of your linux kernel source code folder
+    3. ASMFILE is the address of your vmlinux.txt.
+    4. KERNELOBJ is the address of the binary file of your kernel.
+    5. MEMORYSIZE is the memory size you want your qemu to simulate, it should not be too small
+    6. QEMUCOMMAND is the command you use to run your linux kernel with qemu. Please notice that the address of your initrd file is included in it.
+    7. PRUNED should be True or False. If PRUNED is True, the program will prune the graph according to TOSView/pruneConfig.py.
+    8. PRUNELEVEL is a integer, only used when PRUNED is True. All the topics out of TOSView/pruneConfig.py/LEVELTABLE[0:PRUNELEVEL + 1] will be pruned.
+    9. PRUNEOUTCOME is a integer, only used when PRUNE is True. All the topics out of TOSView/pruneConfig.py/OUTCOMETABLE[PRUNEOUTCOME] will be pruned.
+5. Config TOSView/pruneConfig.py if PRUNED is True
     1. TOPICNUMBERS is the number of topics you are interested.
     2. LEVELTABLE is a 2d array that consists of numbers in 0 - TOPICNUMBERS. Each array means a topic level. You should divide the topics in several groups. The lower groups should contains the more fundamental topics. Combined with PRUNELEVEL, you can prune the graph according to different detail levels.
     3. OUTCOMETABLE is a 2d array that consists of numbers in 0 - TOPICNUMBERS. You can have many learning outcomes. Then fill the OUTCOMTABLE according to different learning outcomes. Combined with PRUNEOUTCOME, you can prune the graph according to different learning outcomes.
     4. FILETABLE is a 2d array that consists of files/folders(for folders, please keep a '/' at the end) in linux kernel source folder. Each array means the files that belong to a specific topic. 
+
+# Prepare xv6
+1. Compile xv6.
+    1. Change Makefile. Make sure that your CFLAGS contains '-O0, -fno-omit-frame-pointer, -g'. The simplest way to do it is use the default debug CFLAGS option (it is commented out by default, you should umcomment it and then comment out the default release CFLAGS option).
+    2. make
+2. Use objdump to disassemble the kernel file.
+    1. objdump -d kernel > kernel.asm (The original kernel.asm is generated by objdump -S, which is not suitable for TOSView.)
+3. Config TOSView/config.py and TOSView/pruneConfig.py (Please reference 'Prepare Linux')
 
 ### gdb
 If you debug linux kernel with the official version of gdb, you will encounter a problem: "Remote 'g' packet reply is too long", so you need to download gdb source code, fix this problem and rebuild it.
@@ -90,7 +106,7 @@ Note: this change will work for gdb 8.1. For different version of gdb, the chang
 
 
 # Run
-    python3 linux-kernel-code-reader/pyTracer.py functionYouWantToTrace
+    python3 TOSView/pyTracer.py functionYouWantToTrace
 
 
-Results are in linux-kernel-code-reader/result folder. You can open .svg file with Firefox browser and enjoy linux kernel source code. The executing order os these functions is the same as depth first search order.
+Results are in TOSView/result folder. You can open .svg file with Firefox browser and enjoy linux kernel source code. The executing order os these functions is the same as depth first search order.

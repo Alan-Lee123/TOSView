@@ -55,7 +55,6 @@ def prune(dotFileName, prunedFileName):
             p = ws[0]
             s = ws[2]
             ns = ws[5].split('"')[1].split(',')
-            pr = [p, s]
             for t in ns:
                 if t != '...':
                     if(s not in parent.keys()):
