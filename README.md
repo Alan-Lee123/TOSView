@@ -1,7 +1,7 @@
 # TOSView
 Draw the running traces of OS(linux, xv6, ...) kernel functions in a graph and link graph nodes to the source codes
 
-![alt text](https://github.com/Alan-Lee123/TOSView/blob/master/trace.png)
+<img src="https://github.com/Alan-Lee123/TOSView/blob/master/trace.png" width = "600" height = "400" alt="" align=center />
 
 # Why you need this
 If you try reading linux kernel source code, you
