@@ -17,9 +17,9 @@ def pruneCheck():
 
 def prune(dotFileName, prunedFileName):
     pruneCheck()
-    topics = LEVELTABLE[0]
+    topics = LEVELTABLE[0].copy()
     for k in range(1, PRUNELEVEL + 1):
-        topics += LEVELTABLE[k]
+        topics += LEVELTABLE[k].copy()
     
     outcome = set(OUTCOMETABLE[PRUNEOUTCOME])
     topics = set(topics).intersection(outcome)
@@ -48,8 +48,9 @@ def prune(dotFileName, prunedFileName):
         ls = f.readlines()
     
     prunedFile.write(ls[0])
+    prunedFile.write(ls[1])
 
-    for l in ls:
+    for l in ls[2:]:
         ws = l.split()
         if(len(ws) == 6):
             p = ws[0]
@@ -79,7 +80,7 @@ def prune(dotFileName, prunedFileName):
                 prunedFile.write(nl + '\n')
     
 
-    for l in ls:
+    for l in ls[2:]:
         ws = l.split()
         if(len(ws) == 6):
             if(ws[2] in validNodes):
