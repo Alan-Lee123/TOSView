@@ -35,7 +35,9 @@ def parse_bt(ls):
 def cmp_bt(bt, base):
     n = len(base)
     if(len(bt) >= n):
-        if(bt[-n + 1:] == base[1:] and
+        if(n == 1):
+            return bt[-1][:2] == base[0][:2]
+        elif(bt[-n + 1:] == base[1:] and
             bt[-n][:2] == base[0][:2]):
             return True
     return False

@@ -11,11 +11,6 @@ class asmAnalyser:
         self.callDsts = {}
         self.funcAddrs = {}
         self.BIT = int(ADDRESSBIT) // 4
-        self.RETCOMMAND = 'ret'
-        self.LEAVECOMMAND = 'leave'
-        if(ADDRESSBIT == 64):
-            self.RETCOMMAND = 'retq'
-            self.LEAVECOMMAND = 'leaveq'
 
         tracerFile = addr.split('/')[-1] + '.tracer'
         if(not self.load(tracerFile, addr)):
@@ -87,6 +82,13 @@ class asmAnalyser:
             s = s.replace(')', '').replace('(', '+')
             return s
         
+        def checkRet(ws):
+            if(self.BIT == 16):
+                return 'retq' in ws
+            else:
+                return 'ret' in ws or 'leave' in ws or ('pop' in ws and '%ebp' in ws)
+                     
+        
         with open(fName) as f:
             name = ''
             for l in f:
@@ -117,7 +119,7 @@ class asmAnalyser:
                         if(cur != name):
                             b = True
                             target = '*0x' + ws[-2]
-                    elif(self.RETCOMMAND in ws or self.LEAVECOMMAND in ws):
+                    elif(checkRet(ws)):
                         self.rets[name] += ['*' + addr]
                     if(b == True and addr != funcAddr):
                         self.calls[name] += [target]

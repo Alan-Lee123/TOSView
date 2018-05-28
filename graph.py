@@ -25,7 +25,8 @@ class graphPainter:
         if(new):
             top = max(top, 1)
         cur = '"' +  bt[top][0] + '\\n' + bt[top][1] + '"'
-        self.insert(cur, bt[top][2])
+        if (height - top < self.maxDepth and top > 0):
+            self.insert(cur, bt[top][2])
         while(height - top < self.maxDepth and top > 0):
             top -= 1
             pre = cur
