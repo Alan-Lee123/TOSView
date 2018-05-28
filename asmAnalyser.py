@@ -125,7 +125,7 @@ class asmAnalyser:
                     elif(checkRet(ws)):
                         self.rets[name] += ['*' + addr]
                     if(b == True and addr != funcAddr):
-                        self.calls[name] += [target]
+                        self.calls[name] += [target, '*' + addr]
 
     def getCalls(self, func):
         return self.calls[func]

@@ -23,7 +23,7 @@ QEMUCOMMAND = 'qemu-system-x86_64 -m 512M -kernel %s/arch/x86/boot/bzImage  \
 # KERNELOBJ = SOURCEFOLDER + '/kernel'
 # QEMUCOMMAND = 'qemu-system-i386 -drive \
 #     file=%s/fs.img,index=1,media=disk,format=raw -drive  \
-#     file=%s/xv6.img,index=0,media=disk,format=raw -m 512 -gdb tcp::%s -S' \
+#     file=%s/xv6.img,index=0,media=disk,format=raw -m 512M -gdb tcp::%s -S' \
 #     % (SOURCEFOLDER, SOURCEFOLDER, GDBPORT)
 
 
