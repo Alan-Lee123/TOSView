@@ -2,13 +2,16 @@ from bt import parse_bt, cmp_bt
 from graph import graphPainter
 from asmAnalyser import asmAnalyser
 import time
-from config import SOURCEFOLDER, ASMFILE, GDBPORT, ADDRESSBIT
+from config import SOURCEFOLDER, ASMFILE, GDBPORT, ARCH
+from arch import getArch
 
 class gdbTracer:
     def __init__(self, p, funcName):
         self.p = p
         self.func = funcName
         self.sourceFolder = SOURCEFOLDER
+        ah = getArch(ARCH)
+        self.eip = ah.getEip()
         self.max_brkTime = 30    # If a breakpoint is triggered more than this number, it will be removed
         self.ed = '394743516231415926'   # A random number as end of output of a session
 
@@ -51,10 +54,8 @@ class gdbTracer:
         return ls
     
     def getRip(self):
-        if(ADDRESSBIT == 64):
-            self.write('p/x $rip')
-        else:
-            self.write('p/x $eip')
+        self.write('p/x $' + self.eip)
+            
         self.flush()
         ls = self.read()
         assert(len(ls) > 0 and '= ' in ls[-1])

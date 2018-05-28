@@ -1,7 +1,8 @@
 import string
 import time
 import os
-from config import ADDRESSBIT
+from config import ARCH
+from arch import getArch
 
 class asmAnalyser:
     def __init__(self, addr):
@@ -10,7 +11,9 @@ class asmAnalyser:
         self.rets = {}
         self.callDsts = {}
         self.funcAddrs = {}
-        self.BIT = int(ADDRESSBIT) // 4
+        ah = getArch(ARCH)
+        self.BIT = ah.getBit() // 4
+        self.RET = ah.getRets()
 
         tracerFile = addr.split('/')[-1] + '.tracer'
         if(not self.load(tracerFile, addr)):
@@ -83,10 +86,10 @@ class asmAnalyser:
             return s
         
         def checkRet(ws):
-            if(self.BIT == 16):
-                return 'retq' in ws
-            else:
-                return 'ret' in ws or 'leave' in ws or ('pop' in ws and '%ebp' in ws)
+            for ret in self.RET:
+                if(all(w in ws for w in ret)):
+                    return True
+            return False
                      
         
         with open(fName) as f:

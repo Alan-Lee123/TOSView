@@ -7,7 +7,7 @@ GDBPORT = '1234'
 ##
 # Linux config
 ###
-ADDRESSBIT = 64
+ARCH = 'x86_64'
 SOURCEFOLDER = '/home/alan/linux-4.16'
 ASMFILE = SOURCEFOLDER + '/vmlinux.txt'
 KERNELOBJ = SOURCEFOLDER + '/vmlinux'
@@ -17,7 +17,7 @@ QEMUCOMMAND = 'qemu-system-x86_64 -m 512M -kernel %s/arch/x86/boot/bzImage  \
 ###
 # xv6 config
 ###
-# ADDRESSBIT = 32
+# ARCH = 'i386'
 # SOURCEFOLDER = '/home/alan/xv6-public'
 # ASMFILE = SOURCEFOLDER + '/kernel.asm'
 # KERNELOBJ = SOURCEFOLDER + '/kernel'
