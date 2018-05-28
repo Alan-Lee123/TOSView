@@ -53,11 +53,10 @@ This README will show you how to use TOSView to learn linux and xv6. You can ins
     2. SOURCEFOLDER is address of your linux kernel source code folder
     3. ASMFILE is the address of your vmlinux.txt.
     4. KERNELOBJ is the address of the binary file of your kernel.
-    5. MEMORYSIZE is the memory size you want your qemu to simulate, it should not be too small
-    6. QEMUCOMMAND is the command you use to run your linux kernel with qemu. Please notice that the address of your initrd file is included in it.
-    7. PRUNED should be True or False. If PRUNED is True, the program will prune the graph according to TOSView/pruneConfig.py.
-    8. PRUNELEVEL is a integer, only used when PRUNED is True. All the topics out of TOSView/pruneConfig.py/LEVELTABLE[0:PRUNELEVEL + 1] will be pruned.
-    9. PRUNEOUTCOME is a integer, only used when PRUNE is True. All the topics out of TOSView/pruneConfig.py/OUTCOMETABLE[PRUNEOUTCOME] will be pruned.
+    5. QEMUCOMMAND is the command you use to run your linux kernel with qemu. Please notice that the address of your initrd file is included in it.
+    6. PRUNED should be True or False. If PRUNED is True, the program will prune the graph according to TOSView/pruneConfig.py.
+    7. PRUNELEVEL is a integer, only used when PRUNED is True. All the topics out of TOSView/pruneConfig.py/LEVELTABLE[0:PRUNELEVEL + 1] will be pruned.
+    8. PRUNEOUTCOME is a integer, only used when PRUNE is True. All the topics out of TOSView/pruneConfig.py/OUTCOMETABLE[PRUNEOUTCOME] will be pruned.
 5. Config TOSView/pruneConfig.py if PRUNED is True
     1. TOPICNUMBERS is the number of topics you are interested.
     2. LEVELTABLE is a 2d array that consists of numbers in 0 - TOPICNUMBERS. Each array means a topic level. You should divide the topics in several groups. The lower groups should contains the more fundamental topics. Combined with PRUNELEVEL, you can prune the graph according to different detail levels.
