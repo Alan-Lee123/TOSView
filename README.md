@@ -1,5 +1,5 @@
 # TOSView
-Draw the running traces of OS(linux, xv6, ...) kernel functions in a graph and link graph nodes to the source codes
+Draw the running traces of OS(linux, xv6, ...) kernel functions in a dynamic call graph and link graph nodes to the source codes
 
 <img src="https://github.com/Alan-Lee123/TOSView/blob/master/trace.png" width = "600" height = "400" alt="" align=center />
 
@@ -108,4 +108,4 @@ Note: this change will work for gdb 8.1. For different version of gdb, the chang
     python3 TOSView/pyTracer.py functionYouWantToTrace
 
 
-Results are in TOSView/result folder. You can open .svg file with Firefox browser and enjoy linux kernel source code. The executing order os these functions is the same as depth first search order.
+Results are in TOSView/result folder. You can open .svg file with Firefox browser and enjoy kernel source code.
